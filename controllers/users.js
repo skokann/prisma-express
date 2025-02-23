@@ -16,7 +16,7 @@ const createUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await prisma.author.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         username: username,
       },
@@ -44,6 +44,11 @@ const createUser = async (req, res) => {
 const signIn = async (req, res) => {
   try {
     const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(404).json({
+        message: "username and password is empty",
+      });
+    }
     const user = await prisma.user.findUnique({
       where: {
         username: username,
@@ -51,7 +56,7 @@ const signIn = async (req, res) => {
     });
     if (!user)
       return res.status(404).json({
-        message: "wrong email password combination",
+        message: "User not found",
       });
     const user_password = bcrypt.compareSync(password, user.password);
     if (!user_password)
